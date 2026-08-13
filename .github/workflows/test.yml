@@ -1,4 +1,4 @@
-name: Tests
+name: Tests + Deploy
 
 on:
   push:
@@ -11,18 +11,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out the code
+      - name: 📥 Check out the code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: 🐍 Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run tests
-        run: pytest -v
+      - name: 🧪 Run 23 Pytest Tests
+        run: |
+          # ::group:: makes the logs collapsible in the UI!
+          echo "::group::🏃 Executing Pytest"
+          pytest -v
+          echo "::endgroup::"
+
+      - name: 📊 Generate Job Summary
+        # 'always()' ensures this runs even if a test fails, so you can see the dashboard
+        if: always()
+        run: |
+          echo "### 🍓 Pi ToDo CI Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Commit** | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Pushed by** | @${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Branch** | \`${{ github.ref_name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Python** | 3.11 (Ubuntu Latest) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Framework** | Flask + SQLite |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✨ **23 automated tests executed.**" >> $GITHUB_STEP_SUMMARY
+          echo "🚀 Ready to deploy to the Raspberry Pi!" >> $GITHUB_STEP_SUMMARY

@@ -1,6 +1,6 @@
 import sqlite3
 from pathlib import Path
-from flask import Flask, g, jsonify, request
+from flask import Flask, g, jsonify, render_template, request
 
 DB_PATH = Path(__file__).parent / "todos.db"
 
@@ -9,6 +9,7 @@ def create_app(db_path=None):
     app = Flask(__name__)
     app.config["DB_PATH"] = str(db_path or DB_PATH)
 
+    # ---------- database helpers ----------
     def get_db():
         if "db" not in g:
             g.db = sqlite3.connect(app.config["DB_PATH"])
@@ -34,11 +35,18 @@ def create_app(db_path=None):
     with app.app_context():
         init_db()
 
+    # ---------- web page ----------
+    @app.get("/")
+    def home():
+        return render_template("index.html")
+
+    # ---------- API: list ----------
     @app.get("/todos")
     def list_todos():
         rows = get_db().execute("SELECT * FROM todos ORDER BY id").fetchall()
         return jsonify([dict(r) for r in rows])
 
+    # ---------- API: add ----------
     @app.post("/todos")
     def add_todo():
         data = request.get_json(silent=True) or {}
@@ -51,6 +59,7 @@ def create_app(db_path=None):
         row = db.execute("SELECT * FROM todos WHERE id = ?", (cur.lastrowid,)).fetchone()
         return jsonify(dict(row)), 201
 
+    # ---------- API: toggle done ----------
     @app.patch("/todos/<int:todo_id>/done")
     def toggle_done(todo_id):
         db = get_db()
@@ -61,6 +70,17 @@ def create_app(db_path=None):
         db.commit()
         row = db.execute("SELECT * FROM todos WHERE id = ?", (todo_id,)).fetchone()
         return jsonify(dict(row))
+
+    # ---------- API: delete ----------
+    @app.delete("/todos/<int:todo_id>")
+    def delete_todo(todo_id):
+        db = get_db()
+        row = db.execute("SELECT * FROM todos WHERE id = ?", (todo_id,)).fetchone()
+        if row is None:
+            return jsonify({"error": "not found"}), 404
+        db.execute("DELETE FROM todos WHERE id = ?", (todo_id,))
+        db.commit()
+        return jsonify({"deleted": todo_id})
 
     return app
 

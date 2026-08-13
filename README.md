@@ -2,10 +2,18 @@
 
 ![Tests](https://github.com/yuktheshwarbhat/to-do-app/actions/workflows/test.yml/badge.svg)
 
-A tiny ToDo API built with Flask + SQLite on a Raspberry Pi, tested with pytest.
+An interactive ToDo app built with Flask + SQLite on a Raspberry Pi, tested with pytest.
 
-## Run the server
+## Features
+- 🌙 Dark mode (remembered per browser)
+- 📊 Live stats + progress bar
+- 🔀 Filter: All / Active / Done
+- 🗑 Add, complete, delete — all via a tested REST API
+
+## Run
     python app.py
 
-## Run the tests
-    pytest
+Open http://raspberrypi.local:5000
+
+## Test
+    pytest -v   (23 tests)

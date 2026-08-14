@@ -3,90 +3,87 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pi ToDo</title>
+<title>Pi ToDo Pro</title>
 <style>
   :root {
-    --bg: #eef2f7;        --card: #ffffff;   --text: #1f2937;
-    --muted: #6b7280;     --border: #e5e7eb;
-    --accent: #6366f1;    --accent2: #8b5cf6;
-    --danger: #ef4444;    --success: #10b981;
+    --bg: #eef2f7; --card: #fff; --text: #1f2937; --muted: #6b7280; --border: #e5e7eb;
+    --accent: #6366f1; --accent2: #8b5cf6; --danger: #ef4444; --success: #10b981;
     --shadow: 0 8px 24px rgba(0,0,0,.08);
   }
   [data-theme="dark"] {
-    --bg: #0f172a;        --card: #1e293b;   --text: #e2e8f0;
-    --muted: #94a3b8;     --border: #334155;
+    --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --muted: #94a3b8; --border: #334155;
     --shadow: 0 8px 24px rgba(0,0,0,.45);
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg); color: var(--text);
-    min-height: 100vh; display: flex; justify-content: center;
-    padding: 40px 16px; transition: background .3s, color .3s;
-  }
-  .app { width: 100%; max-width: 520px; }
-
+  body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; transition: .3s; }
+  .app { width: 100%; max-width: 560px; }
   header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-  h1 { background: linear-gradient(90deg, var(--accent), var(--accent2));
-       -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2rem; }
+  h1 { background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2rem; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
 
-  .card { background: var(--card); border: 1px solid var(--border);
-          border-radius: 12px; box-shadow: var(--shadow); }
-
-  /* stats + progress */
   .stats { display: flex; gap: 16px; align-items: center; padding: 14px 18px; margin-bottom: 16px; }
   .stat { text-align: center; }
   .stat span { font-size: 1.3rem; font-weight: 700; display: block; }
-  .stat small { color: var(--muted); }
+  .stat small { color: var(--muted); font-size: .75rem; }
   .progress { flex: 1; height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
-  .progress div { height: 100%; width: 0%;
-                  background: linear-gradient(90deg, var(--accent), var(--accent2));
-                  transition: width .4s ease; }
+  .progress div { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width .4s ease; }
 
-  /* add form */
-  form.card { display: flex; gap: 10px; padding: 10px; margin-bottom: 16px; }
-  input { flex: 1; border: none; background: transparent; color: var(--text);
-          font-size: 1rem; outline: none; padding: 8px; }
-  .btn-primary { border: none; cursor: pointer; color: #fff; font-weight: 600;
-                 padding: 10px 18px; border-radius: 8px;
-                 background: linear-gradient(90deg, var(--accent), var(--accent2));
-                 transition: transform .15s; }
-  .btn-primary:hover { transform: scale(1.05); }
+  form.card { display: flex; flex-direction: column; gap: 10px; padding: 12px; margin-bottom: 16px; }
+  .input-row { display: flex; gap: 10px; }
+  input[type="text"] { flex: 1; border: none; background: transparent; color: var(--text); font-size: 1rem; outline: none; padding: 8px; }
 
-  /* filter tabs */
+  .priority-group { display: flex; gap: 8px; }
+  .p-btn { flex: 1; padding: 6px; border: 1px solid var(--border); background: transparent; color: var(--muted); border-radius: 6px; cursor: pointer; font-size: .85rem; transition: .2s; }
+  .p-btn.active-high { background: #fee2e2; color: #991b1b; border-color: #fca5a5; font-weight: 600; }
+  .p-btn.active-med  { background: #fef3c7; color: #92400e; border-color: #fcd34d; font-weight: 600; }
+  .p-btn.active-low  { background: #dcfce7; color: #166534; border-color: #86efac; font-weight: 600; }
+  [data-theme="dark"] .p-btn.active-high { background: #7f1d1d; color: #fca5a5; border-color: #991b1b; }
+  [data-theme="dark"] .p-btn.active-med  { background: #78350f; color: #fcd34d; border-color: #92400e; }
+  [data-theme="dark"] .p-btn.active-low  { background: #14532d; color: #86efac; border-color: #166534; }
+
+  .btn-primary { border: none; cursor: pointer; color: #fff; font-weight: 600; padding: 10px 18px; border-radius: 8px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: transform .15s; }
+  .btn-primary:hover { transform: scale(1.02); }
+
   .filters { display: flex; gap: 8px; margin-bottom: 16px; }
-  .filter-btn { border: 1px solid var(--border); background: var(--card); color: var(--muted);
-                padding: 6px 16px; border-radius: 99px; cursor: pointer; transition: .2s; }
+  .filter-btn { border: 1px solid var(--border); background: var(--card); color: var(--muted); padding: 6px 16px; border-radius: 99px; cursor: pointer; transition: .2s; font-size: .9rem; }
   .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-  /* todo list */
-  ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  ul { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
   @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; } }
   .todo { display: flex; align-items: center; gap: 12px; padding: 14px 16px; animation: slideIn .25s ease; }
   .todo.removing { opacity: 0; transform: translateX(40px); transition: .25s; }
-  .title { flex: 1; }
+  .title { flex: 1; cursor: text; }
   .is-done .title { text-decoration: line-through; color: var(--muted); }
 
-  .check { width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
-           border: 2px solid var(--accent); background: transparent;
-           color: #fff; font-size: 14px; line-height: 1; transition: .2s; }
-  .is-done .check { background: var(--success); border-color: var(--success); }
+  .edit-input { flex: 1; border: none; background: transparent; color: var(--text); font-size: 1rem; outline: none; border-bottom: 2px solid var(--accent); padding: 2px 0; }
 
+  .badge { padding: 2px 8px; border-radius: 4px; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+  .badge-high { background: #fee2e2; color: #991b1b; }
+  .badge-med  { background: #fef3c7; color: #92400e; }
+  .badge-low  { background: #dcfce7; color: #166534; }
+  [data-theme="dark"] .badge-high { background: #7f1d1d; color: #fca5a5; }
+  [data-theme="dark"] .badge-med  { background: #78350f; color: #fcd34d; }
+  [data-theme="dark"] .badge-low  { background: #14532d; color: #86efac; }
+
+  .check { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid var(--accent); background: transparent; color: #fff; font-size: 12px; transition: .2s; }
+  .is-done .check { background: var(--success); border-color: var(--success); }
   .icon-btn { border: none; background: transparent; cursor: pointer; font-size: 1.1rem; }
   .del { opacity: .4; transition: .2s; }
   .del:hover { opacity: 1; transform: scale(1.15); }
 
+  .footer-actions { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: .85rem; }
+  .clear-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-weight: 600; }
+  .clear-btn:disabled { opacity: .4; cursor: not-allowed; }
+
   .empty { text-align: center; color: var(--muted); padding: 30px 0; }
   .hidden { display: none; }
-  footer { text-align: center; color: var(--muted); margin-top: 30px; font-size: .85rem; }
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>🍓 Pi ToDo</h1>
-    <button id="theme-btn" class="icon-btn" title="Toggle theme">🌙</button>
+    <h1>?? Pi ToDo Pro</h1>
+    <button id="theme-btn" class="icon-btn" title="Toggle theme">??</button>
   </header>
 
   <section class="stats card">
@@ -97,8 +94,15 @@
   </section>
 
   <form id="add-form" class="card">
-    <input id="title-input" placeholder="What needs doing?" autocomplete="off" required>
-    <button class="btn-primary" type="submit">+ Add</button>
+    <div class="input-row">
+      <input id="title-input" placeholder="What needs doing?" autocomplete="off" required>
+      <button class="btn-primary" type="submit">+ Add</button>
+    </div>
+    <div class="priority-group">
+      <button type="button" class="p-btn" data-p="high" onclick="setPriority('high')">?? High</button>
+      <button type="button" class="p-btn active-med" data-p="medium" onclick="setPriority('medium')">?? Medium</button>
+      <button type="button" class="p-btn" data-p="low" onclick="setPriority('low')">?? Low</button>
+    </div>
   </form>
 
   <nav class="filters">
@@ -108,9 +112,12 @@
   </nav>
 
   <ul id="todo-list"></ul>
-  <p id="empty" class="empty hidden">Nothing here 🎉</p>
+  <p id="empty" class="empty hidden">Nothing here ??</p>
 
-  <footer>Flask + SQLite on a Raspberry Pi 🍓</footer>
+  <div class="footer-actions">
+    <span>Double-click text to edit</span>
+    <button id="clear-btn" class="clear-btn" onclick="clearCompleted()" disabled>Clear Completed</button>
+  </div>
 </div>
 
 <script>
@@ -120,29 +127,38 @@
   const input = document.getElementById('title-input');
   const themeBtn = document.getElementById('theme-btn');
   const filterBtns = document.querySelectorAll('.filter-btn');
+  const clearBtn = document.getElementById('clear-btn');
 
   let todos = [];
   let filter = 'all';
+  let currentPriority = 'medium';
 
-  /* ---------- dark mode (remembered in browser) ---------- */
+  /* ---------- dark mode ---------- */
   const saved = localStorage.getItem('theme') || 'light';
   setTheme(saved);
   themeBtn.addEventListener('click', () => {
     const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    setTheme(next);
-    localStorage.setItem('theme', next);
+    setTheme(next); localStorage.setItem('theme', next);
   });
   function setTheme(t) {
     document.documentElement.setAttribute('data-theme', t);
-    themeBtn.textContent = t === 'dark' ? '☀️' : '🌙';
+    themeBtn.textContent = t === 'dark' ? '??' : '??';
   }
 
-  /* ---------- filter tabs ---------- */
+  /* ---------- filters ---------- */
   filterBtns.forEach(btn => btn.addEventListener('click', () => {
     filter = btn.dataset.filter;
     filterBtns.forEach(b => b.classList.toggle('active', b === btn));
     render();
   }));
+
+  /* ---------- priority selector ---------- */
+  function setPriority(p) {
+    currentPriority = p;
+    document.querySelectorAll('.p-btn').forEach(btn => {
+      btn.className = 'p-btn' + (btn.dataset.p === p ? ` active-${p}` : '');
+    });
+  }
 
   /* ---------- data ---------- */
   async function loadTodos() {
@@ -152,37 +168,35 @@
   }
 
   function render() {
-    const visible = todos.filter(t =>
-      filter === 'all' ? true : (filter === 'active' ? !t.done : t.done));
-
+    const visible = todos.filter(t => filter === 'all' ? true : (filter === 'active' ? !t.done : t.done));
     list.innerHTML = '';
+
     visible.forEach(t => {
       const li = document.createElement('li');
       li.className = 'todo card' + (t.done ? ' is-done' : '');
       li.innerHTML = `
-        <button class="check" onclick="toggleTodo(${t.id})">${t.done ? '✓' : ''}</button>
-        <span class="title">${escapeHtml(t.title)}</span>
-        <button class="icon-btn del" onclick="deleteTodo(${t.id}, this)" title="delete">🗑</button>`;
+        <button class="check" onclick="toggleTodo(${t.id})">${t.done ? '?' : ''}</button>
+        <span class="title" ondblclick="startEdit(${t.id}, this)">${escapeHtml(t.title)}</span>
+        <span class="badge badge-${t.priority}">${t.priority}</span>
+        <button class="icon-btn del" onclick="deleteTodo(${t.id}, this)" title="delete">??</button>`;
       list.appendChild(li);
     });
-    emptyMsg.classList.toggle('hidden', visible.length > 0);
 
+    emptyMsg.classList.toggle('hidden', visible.length > 0);
     const total = todos.length;
     const done = todos.filter(t => t.done).length;
+
     document.getElementById('stat-total').textContent = total;
     document.getElementById('stat-active').textContent = total - done;
     document.getElementById('stat-done').textContent = done;
-    document.getElementById('progress-bar').style.width =
-      total ? (done / total * 100) + '%' : '0%';
+    document.getElementById('progress-bar').style.width = total ? (done / total * 100) + '%' : '0%';
+
+    clearBtn.disabled = (done === 0);
   }
 
-  /* security: never inject raw text as HTML */
-  function escapeHtml(s) {
-    const div = document.createElement('div');
-    div.textContent = s;
-    return div.innerHTML;
-  }
+  function escapeHtml(s) { const div = document.createElement('div'); div.textContent = s; return div.innerHTML; }
 
+  /* ---------- actions ---------- */
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const title = input.value.trim();
@@ -190,7 +204,7 @@
     await fetch('/todos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title })
+      body: JSON.stringify({ title, priority: currentPriority })
     });
     input.value = '';
     loadTodos();
@@ -207,6 +221,42 @@
     await new Promise(r => setTimeout(r, 250));
     await fetch(`/todos/${id}`, { method: 'DELETE' });
     loadTodos();
+  }
+
+  async function clearCompleted() {
+    if (confirm("Delete all completed tasks?")) {
+      await fetch('/todos/clear-completed', { method: 'DELETE' });
+      loadTodos();
+    }
+  }
+
+  /* ---------- inline editing ---------- */
+  async function startEdit(id, span) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'edit-input';
+    input.value = span.textContent;
+    span.replaceWith(input);
+    input.focus();
+    input.select();
+
+    async function save() {
+      const newTitle = input.value.trim();
+      if (newTitle && newTitle !== span.textContent) {
+        await fetch(`/todos/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: newTitle })
+        });
+      }
+      loadTodos();
+    }
+
+    input.addEventListener('blur', save);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') input.blur();
+      if (e.key === 'Escape') { input.value = span.textContent; input.blur(); }
+    });
   }
 
   loadTodos();

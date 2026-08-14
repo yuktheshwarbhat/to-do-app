@@ -23,14 +23,20 @@ def create_app(db_path=None):
             db.close()
 
     def init_db():
-        get_db().execute(
+        db = get_db()
+        db.execute(
             """CREATE TABLE IF NOT EXISTS todos (
                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                    title TEXT NOT NULL,
-                   done INTEGER DEFAULT 0
+                   done INTEGER DEFAULT 0,
+                   priority TEXT DEFAULT 'medium'
                )"""
         )
-        g.db.commit()
+        # Migration: add 'priority' column to older databases
+        cols = [row[1] for row in db.execute("PRAGMA table_info(todos)").fetchall()]
+        if "priority" not in cols:
+            db.execute("ALTER TABLE todos ADD COLUMN priority TEXT DEFAULT 'medium'")
+        db.commit()
 
     with app.app_context():
         init_db()
@@ -40,10 +46,10 @@ def create_app(db_path=None):
     def home():
         return render_template("index.html")
 
-    # ---------- API: list ----------
+    # ---------- API: list (newest first) ----------
     @app.get("/todos")
     def list_todos():
-        rows = get_db().execute("SELECT * FROM todos ORDER BY id").fetchall()
+        rows = get_db().execute("SELECT * FROM todos ORDER BY id DESC").fetchall()
         return jsonify([dict(r) for r in rows])
 
     # ---------- API: add ----------
@@ -51,13 +57,49 @@ def create_app(db_path=None):
     def add_todo():
         data = request.get_json(silent=True) or {}
         title = (data.get("title") or "").strip()
+        priority = data.get("priority", "medium")
+
         if not title:
             return jsonify({"error": "title is required"}), 400
+        if priority not in ["low", "medium", "high"]:
+            priority = "medium"
+
         db = get_db()
-        cur = db.execute("INSERT INTO todos (title) VALUES (?)", (title,))
+        cur = db.execute(
+            "INSERT INTO todos (title, priority) VALUES (?, ?)",
+            (title, priority),
+        )
         db.commit()
         row = db.execute("SELECT * FROM todos WHERE id = ?", (cur.lastrowid,)).fetchone()
         return jsonify(dict(row)), 201
+
+    # ---------- API: edit title / priority ----------
+    @app.patch("/todos/<int:todo_id>")
+    def update_todo(todo_id):
+        data = request.get_json(silent=True) or {}
+        title = (data.get("title") or "").strip()
+        priority = data.get("priority")
+
+        db = get_db()
+        row = db.execute("SELECT * FROM todos WHERE id = ?", (todo_id,)).fetchone()
+        if row is None:
+            return jsonify({"error": "not found"}), 404
+
+        updates, params = [], []
+        if title:
+            updates.append("title = ?")
+            params.append(title)
+        if priority in ["low", "medium", "high"]:
+            updates.append("priority = ?")
+            params.append(priority)
+
+        if updates:
+            params.append(todo_id)
+            db.execute(f"UPDATE todos SET {', '.join(updates)} WHERE id = ?", params)
+            db.commit()
+
+        row = db.execute("SELECT * FROM todos WHERE id = ?", (todo_id,)).fetchone()
+        return jsonify(dict(row))
 
     # ---------- API: toggle done ----------
     @app.patch("/todos/<int:todo_id>/done")
@@ -71,7 +113,7 @@ def create_app(db_path=None):
         row = db.execute("SELECT * FROM todos WHERE id = ?", (todo_id,)).fetchone()
         return jsonify(dict(row))
 
-    # ---------- API: delete ----------
+    # ---------- API: delete one ----------
     @app.delete("/todos/<int:todo_id>")
     def delete_todo(todo_id):
         db = get_db()
@@ -81,6 +123,14 @@ def create_app(db_path=None):
         db.execute("DELETE FROM todos WHERE id = ?", (todo_id,))
         db.commit()
         return jsonify({"deleted": todo_id})
+
+    # ---------- API: clear all completed ----------
+    @app.delete("/todos/clear-completed")
+    def clear_completed():
+        db = get_db()
+        cursor = db.execute("DELETE FROM todos WHERE done = 1")
+        db.commit()
+        return jsonify({"cleared": cursor.rowcount})
 
     return app
 

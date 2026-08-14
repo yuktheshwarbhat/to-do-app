@@ -18,9 +18,9 @@ def client(app):
 
 @pytest.fixture
 def add_todo(client):
-    """Fixture factory: a little helper to create todos with less repetition."""
-    def _add(title):
-        resp = client.post("/todos", json={"title": title})
+    """Fixture factory: create todos with less repetition."""
+    def _add(title, priority="medium"):
+        resp = client.post("/todos", json={"title": title, "priority": priority})
         assert resp.status_code == 201
         return resp.get_json()
     return _add
@@ -31,7 +31,7 @@ def add_todo(client):
 def test_home_page_serves_html(client):
     resp = client.get("/")
     assert resp.status_code == 200
-    assert b"Pi ToDo" in resp.data
+    assert b"Pi ToDo Pro" in resp.data
 
 
 def test_home_page_has_form_and_script(client):
@@ -57,11 +57,11 @@ def test_added_todo_appears_in_list(client, add_todo):
     assert "buy milk" in titles
 
 
-def test_todos_returned_in_insertion_order(client, add_todo):
+def test_todos_returned_newest_first(client, add_todo):
     for title in ["first", "second", "third"]:
         add_todo(title)
     titles = [t["title"] for t in client.get("/todos").get_json()]
-    assert titles == ["first", "second", "third"]
+    assert titles == ["third", "second", "first"]
 
 
 def test_each_todo_gets_unique_id(client, add_todo):
@@ -92,18 +92,29 @@ def test_add_todo_rejects_bad_input(client, payload):
 
 
 def test_add_todo_without_json_body(client):
-    resp = client.post("/todos")
-    assert resp.status_code == 400
+    assert client.post("/todos").status_code == 400
 
 
 def test_add_todo_with_emoji(client, add_todo):
-    todo = add_todo("🍓 water the plants 🌱")
-    assert todo["title"] == "🍓 water the plants 🌱"
+    todo = add_todo("?? water the plants ??")
+    assert todo["title"] == "?? water the plants ??"
 
 
 def test_add_long_title(client, add_todo):
     title = "x" * 500
     assert add_todo(title)["title"] == title
+
+
+# ---------- priorities ----------
+
+def test_add_todo_with_priority(client, add_todo):
+    todo = add_todo("urgent task", priority="high")
+    assert todo["priority"] == "high"
+
+
+def test_invalid_priority_defaults_to_medium(client):
+    resp = client.post("/todos", json={"title": "test", "priority": "ultra-mega"})
+    assert resp.get_json()["priority"] == "medium"
 
 
 # ---------- toggling ----------
@@ -133,6 +144,19 @@ def test_toggle_missing_todo_returns_404(client):
     assert client.patch("/todos/999/done").status_code == 404
 
 
+# ---------- editing ----------
+
+def test_update_todo_title(client, add_todo):
+    todo = add_todo("old title")
+    resp = client.patch(f"/todos/{todo['id']}", json={"title": "new title"})
+    assert resp.status_code == 200
+    assert resp.get_json()["title"] == "new title"
+
+
+def test_update_missing_todo_returns_404(client):
+    assert client.patch("/todos/999", json={"title": "x"}).status_code == 404
+
+
 # ---------- deleting ----------
 
 def test_delete_todo(client, add_todo):
@@ -154,3 +178,19 @@ def test_delete_only_removes_target(client, add_todo):
 
 def test_delete_missing_todo_returns_404(client):
     assert client.delete("/todos/999").status_code == 404
+
+
+# ---------- clear completed ----------
+
+def test_clear_completed(client, add_todo):
+    t1 = add_todo("done 1")
+    t2 = add_todo("active")
+    client.patch(f"/todos/{t1['id']}/done")
+
+    resp = client.delete("/todos/clear-completed")
+    assert resp.status_code == 200
+    assert resp.get_json()["cleared"] == 1
+
+    remaining = client.get("/todos").get_json()
+    assert len(remaining) == 1
+    assert remaining[0]["id"] == t2["id"]

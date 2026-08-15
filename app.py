@@ -1,8 +1,10 @@
+import os
 import sqlite3
 from pathlib import Path
 from flask import Flask, g, jsonify, render_template, request
 
-DB_PATH = Path(__file__).parent / "todos.db"
+# DB location configurable via environment variable (needed for Docker)
+DB_PATH = Path(os.environ.get("DB_PATH", str(Path(__file__).parent / "todos.db")))
 
 
 def create_app(db_path=None):

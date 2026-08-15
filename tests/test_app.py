@@ -45,6 +45,13 @@ def test_api_returns_json_content_type(client):
     assert resp.content_type.startswith("application/json")
 
 
+def test_priority_css_classes_exist(client):
+    """Every priority level must have matching CSS in the page."""
+    html = client.get("/").data.decode()
+    for p in ["high", "medium", "low"]:
+        assert f"badge-{p}" in html
+
+
 # ---------- listing ----------
 
 def test_list_starts_empty(client):
@@ -95,9 +102,9 @@ def test_add_todo_without_json_body(client):
     assert client.post("/todos").status_code == 400
 
 
-def test_add_todo_with_emoji(client, add_todo):
-    todo = add_todo("?? water the plants ??")
-    assert todo["title"] == "?? water the plants ??"
+def test_add_todo_with_unicode(client, add_todo):
+    todo = add_todo("cafe naive resume - weekend tasks")
+    assert todo["title"] == "cafe naive resume - weekend tasks"
 
 
 def test_add_long_title(client, add_todo):

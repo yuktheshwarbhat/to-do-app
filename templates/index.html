@@ -15,10 +15,31 @@
     --shadow: 0 8px 24px rgba(0,0,0,.45);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; justify-content: center; padding: 40px 16px; transition: .3s; }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; display: flex; justify-content: center;
+    padding: 40px 16px; transition: background .3s, color .3s;
+  }
   .app { width: 100%; max-width: 560px; }
+
   header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-  h1 { background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2rem; }
+  h1 { font-size: 2rem; }
+  .gradient-text {
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  #theme-btn {
+    font-size: .8rem; padding: 6px 12px; cursor: pointer;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--card); color: var(--text); transition: .2s;
+  }
+  #theme-btn:hover { border-color: var(--accent); }
+
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
 
   .stats { display: flex; gap: 16px; align-items: center; padding: 14px 18px; margin-bottom: 16px; }
@@ -34,12 +55,12 @@
 
   .priority-group { display: flex; gap: 8px; }
   .p-btn { flex: 1; padding: 6px; border: 1px solid var(--border); background: transparent; color: var(--muted); border-radius: 6px; cursor: pointer; font-size: .85rem; transition: .2s; }
-  .p-btn.active-high { background: #fee2e2; color: #991b1b; border-color: #fca5a5; font-weight: 600; }
-  .p-btn.active-med  { background: #fef3c7; color: #92400e; border-color: #fcd34d; font-weight: 600; }
-  .p-btn.active-low  { background: #dcfce7; color: #166534; border-color: #86efac; font-weight: 600; }
-  [data-theme="dark"] .p-btn.active-high { background: #7f1d1d; color: #fca5a5; border-color: #991b1b; }
-  [data-theme="dark"] .p-btn.active-med  { background: #78350f; color: #fcd34d; border-color: #92400e; }
-  [data-theme="dark"] .p-btn.active-low  { background: #14532d; color: #86efac; border-color: #166534; }
+  .p-btn.active-high   { background: #fee2e2; color: #991b1b; border-color: #fca5a5; font-weight: 600; }
+  .p-btn.active-medium { background: #fef3c7; color: #92400e; border-color: #fcd34d; font-weight: 600; }
+  .p-btn.active-low    { background: #dcfce7; color: #166534; border-color: #86efac; font-weight: 600; }
+  [data-theme="dark"] .p-btn.active-high   { background: #7f1d1d; color: #fca5a5; border-color: #991b1b; }
+  [data-theme="dark"] .p-btn.active-medium { background: #78350f; color: #fcd34d; border-color: #92400e; }
+  [data-theme="dark"] .p-btn.active-low    { background: #14532d; color: #86efac; border-color: #166534; }
 
   .btn-primary { border: none; cursor: pointer; color: #fff; font-weight: 600; padding: 10px 18px; border-radius: 8px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: transform .15s; }
   .btn-primary:hover { transform: scale(1.02); }
@@ -58,18 +79,18 @@
   .edit-input { flex: 1; border: none; background: transparent; color: var(--text); font-size: 1rem; outline: none; border-bottom: 2px solid var(--accent); padding: 2px 0; }
 
   .badge { padding: 2px 8px; border-radius: 4px; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
-  .badge-high { background: #fee2e2; color: #991b1b; }
-  .badge-med  { background: #fef3c7; color: #92400e; }
-  .badge-low  { background: #dcfce7; color: #166534; }
-  [data-theme="dark"] .badge-high { background: #7f1d1d; color: #fca5a5; }
-  [data-theme="dark"] .badge-med  { background: #78350f; color: #fcd34d; }
-  [data-theme="dark"] .badge-low  { background: #14532d; color: #86efac; }
+  .badge-high   { background: #fee2e2; color: #991b1b; }
+  .badge-medium { background: #fef3c7; color: #92400e; }
+  .badge-low    { background: #dcfce7; color: #166534; }
+  [data-theme="dark"] .badge-high   { background: #7f1d1d; color: #fca5a5; }
+  [data-theme="dark"] .badge-medium { background: #78350f; color: #fcd34d; }
+  [data-theme="dark"] .badge-low    { background: #14532d; color: #86efac; }
 
   .check { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid var(--accent); background: transparent; color: #fff; font-size: 12px; transition: .2s; }
   .is-done .check { background: var(--success); border-color: var(--success); }
-  .icon-btn { border: none; background: transparent; cursor: pointer; font-size: 1.1rem; }
+  .icon-btn { border: none; background: transparent; cursor: pointer; font-size: 1.1rem; color: var(--muted); }
   .del { opacity: .4; transition: .2s; }
-  .del:hover { opacity: 1; transform: scale(1.15); }
+  .del:hover { opacity: 1; transform: scale(1.15); color: var(--danger); }
 
   .footer-actions { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: .85rem; }
   .clear-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-weight: 600; }
@@ -82,8 +103,8 @@
 <body>
 <div class="app">
   <header>
-    <h1>?? Pi ToDo Pro</h1>
-    <button id="theme-btn" class="icon-btn" title="Toggle theme">??</button>
+    <h1><span class="gradient-text">Pi ToDo Pro</span></h1>
+    <button id="theme-btn" title="Toggle theme">Dark</button>
   </header>
 
   <section class="stats card">
@@ -99,9 +120,9 @@
       <button class="btn-primary" type="submit">+ Add</button>
     </div>
     <div class="priority-group">
-      <button type="button" class="p-btn" data-p="high" onclick="setPriority('high')">?? High</button>
-      <button type="button" class="p-btn active-med" data-p="medium" onclick="setPriority('medium')">?? Medium</button>
-      <button type="button" class="p-btn" data-p="low" onclick="setPriority('low')">?? Low</button>
+      <button type="button" class="p-btn" data-p="high" onclick="setPriority('high')">High</button>
+      <button type="button" class="p-btn active-medium" data-p="medium" onclick="setPriority('medium')">Medium</button>
+      <button type="button" class="p-btn" data-p="low" onclick="setPriority('low')">Low</button>
     </div>
   </form>
 
@@ -112,7 +133,7 @@
   </nav>
 
   <ul id="todo-list"></ul>
-  <p id="empty" class="empty hidden">Nothing here ??</p>
+  <p id="empty" class="empty hidden">Nothing here yet</p>
 
   <div class="footer-actions">
     <span>Double-click text to edit</span>
@@ -142,7 +163,7 @@
   });
   function setTheme(t) {
     document.documentElement.setAttribute('data-theme', t);
-    themeBtn.textContent = t === 'dark' ? '??' : '??';
+    themeBtn.textContent = t === 'dark' ? 'Light' : 'Dark';
   }
 
   /* ---------- filters ---------- */
@@ -175,10 +196,10 @@
       const li = document.createElement('li');
       li.className = 'todo card' + (t.done ? ' is-done' : '');
       li.innerHTML = `
-        <button class="check" onclick="toggleTodo(${t.id})">${t.done ? '?' : ''}</button>
+        <button class="check" onclick="toggleTodo(${t.id})">${t.done ? '&#10003;' : ''}</button>
         <span class="title" ondblclick="startEdit(${t.id}, this)">${escapeHtml(t.title)}</span>
         <span class="badge badge-${t.priority}">${t.priority}</span>
-        <button class="icon-btn del" onclick="deleteTodo(${t.id}, this)" title="delete">??</button>`;
+        <button class="icon-btn del" onclick="deleteTodo(${t.id}, this)" title="delete">&times;</button>`;
       list.appendChild(li);
     });
 
@@ -232,17 +253,18 @@
 
   /* ---------- inline editing ---------- */
   async function startEdit(id, span) {
+    const todo = todos.find(t => t.id === id);
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'edit-input';
-    input.value = span.textContent;
+    input.value = todo.title;
     span.replaceWith(input);
     input.focus();
     input.select();
 
     async function save() {
       const newTitle = input.value.trim();
-      if (newTitle && newTitle !== span.textContent) {
+      if (newTitle && newTitle !== todo.title) {
         await fetch(`/todos/${id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -255,7 +277,7 @@
     input.addEventListener('blur', save);
     input.addEventListener('keydown', e => {
       if (e.key === 'Enter') input.blur();
-      if (e.key === 'Escape') { input.value = span.textContent; input.blur(); }
+      if (e.key === 'Escape') { input.value = todo.title; input.blur(); }
     });
   }
 

@@ -1,6 +1,6 @@
 name: E2E Tests
 
-on:[push,pull_request]
+on: [push,pull_request]
 
 jobs:
   e2e:
@@ -31,4 +31,4 @@ jobs:
         with:
           name: e2e-videos
           path: test-results/
-          if-no-files-found: ignore
+          if-no-files-found: ignor

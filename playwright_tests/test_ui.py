@@ -1,5 +1,6 @@
 from playwright.sync_api import expect
 
+live_server_url = "127.0.0.1"
 
 def test_page_loads(page, live_server_url):
     page.goto(live_server_url)

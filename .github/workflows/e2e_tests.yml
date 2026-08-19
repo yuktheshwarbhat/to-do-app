@@ -23,7 +23,7 @@ jobs:
         run: playwright install --with-deps chromium
 
       - name: Run E2E tests
-        run: pytest tests_e2e -v --video retain-on-failure
+        run: pytest playwright_tests -v --video retain-on-failure
 
       - name: Upload test videos
         if: always()

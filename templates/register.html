@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register - Pi ToDo Pro</title>
+<style>
+  :root {
+    --bg: #eef2f7; --card: #fff; --text: #1f2937; --muted: #6b7280; --border: #e5e7eb;
+    --accent: #6366f1; --accent2: #8b5cf6; --shadow: 0 8px 24px rgba(0,0,0,.08);
+  }
+  [data-theme="dark"] {
+    --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --muted: #94a3b8; --border: #334155;
+    --shadow: 0 8px 24px rgba(0,0,0,.45);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    transition: background .3s, color .3s;
+  }
+  .auth-card {
+    width: 100%; max-width: 380px; background: var(--card);
+    border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); padding: 32px;
+  }
+  h1 { font-size: 1.6rem; margin-bottom: 4px; }
+  .gradient-text {
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .subtitle { color: var(--muted); font-size: .9rem; margin-bottom: 24px; }
+  label { display: block; font-size: .85rem; font-weight: 600; margin: 14px 0 6px; }
+  input {
+    width: 100%; padding: 10px 12px; font-size: 1rem; color: var(--text);
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px; outline: none;
+  }
+  input:focus { border-color: var(--accent); }
+  button[type="submit"] {
+    width: 100%; margin-top: 22px; padding: 12px; border: none; border-radius: 8px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer;
+  }
+  button[type="submit"]:hover { opacity: .92; }
+  .switch { text-align: center; margin-top: 18px; font-size: .9rem; color: var(--muted); }
+  .switch a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .flash { background: #fee2e2; color: #991b1b; padding: 10px 12px; border-radius: 8px; font-size: .85rem; margin-bottom: 14px; }
+  [data-theme="dark"] .flash { background: #7f1d1d; color: #fca5a5; }
+</style>
+</head>
+<body>
+<div class="auth-card">
+  <h1><span class="gradient-text">Pi ToDo Pro</span></h1>
+  <p class="subtitle">Create your account</p>
+
+  {% with messages = get_flashed_messages() %}
+    {% for m in messages %}<p class="flash">{{ m }}</p>{% endfor %}
+  {% endwith %}
+
+  <form method="post" action="/register">
+    <label for="username">Username (min 3 characters)</label>
+    <input id="username" name="username" autocomplete="username" required>
+
+    <label for="password">Password (min 6 characters)</label>
+    <input id="password" name="password" type="password" autocomplete="new-password" required>
+
+    <button type="submit">Create account</button>
+  </form>
+
+  <p class="switch">Already registered? <a href="/login">Login</a></p>
+</div>
+</body>
+</html>

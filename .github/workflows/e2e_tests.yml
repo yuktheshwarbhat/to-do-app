@@ -31,4 +31,4 @@ jobs:
         with:
           name: e2e-videos
           path: test-results/
-          if-no-files-found: ignor
+          if-no-files-found: ignore

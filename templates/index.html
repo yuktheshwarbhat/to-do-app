@@ -38,6 +38,16 @@
     border: 1px solid var(--border); border-radius: 6px;
     background: var(--card); color: var(--text); transition: .2s;
   }
+  
+    .header-right { display: flex; align-items: center; gap: 10px; }
+  .hello { color: var(--muted); font-size: .85rem; }
+  .logout-btn {
+    font-size: .8rem; padding: 6px 12px; cursor: pointer;
+    border: 1px solid var(--border); border-radius: 6px;
+    background: var(--card); color: var(--danger); transition: .2s;
+  }
+  .logout-btn:hover { border-color: var(--danger); }
+  
   #theme-btn:hover { border-color: var(--accent); }
 
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
@@ -102,9 +112,13 @@
 </head>
 <body>
 <div class="app">
-  <header>
+    <header>
     <h1><span class="gradient-text">Pi ToDo Pro</span></h1>
-    <button id="theme-btn" title="Toggle theme">Dark</button>
+    <div class="header-right">
+      <span class="hello">Hi, {{ username }}</span>
+      <form method="post" action="/logout"><button type="submit" class="logout-btn">Logout</button></form>
+      <button id="theme-btn" title="Toggle theme">Dark</button>
+    </div>
   </header>
 
   <section class="stats card">

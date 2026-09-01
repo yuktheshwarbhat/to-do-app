@@ -2,6 +2,7 @@ import os
 import sqlite3
 from functools import wraps
 from pathlib import Path
+from flask import send_from_directory
 
 from flask import Flask, flash, g, jsonify, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -13,6 +14,7 @@ def create_app(db_path=None):
     app = Flask(__name__)
     app.config["DB_PATH"] = str(db_path or DB_PATH)
     app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-change-me")
+    REACT_DIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "frontend", "dist")
 
     def get_db():
         if "db" not in g:
@@ -142,10 +144,18 @@ def create_app(db_path=None):
 
     # ---------- TODO API ----------
     @app.get("/")
-    @login_required
     def home():
-        user = get_db().execute("SELECT username FROM users WHERE id = ?", (current_user_id(),)).fetchone()
+        react_index = os.path.join(REACT_DIST, "index.html")
+        if os.path.exists(react_index):
+            return send_from_directory(REACT_DIST, "index.html")
+        if "user_id" not in session:
+            return redirect("/login")
+        user = get_db().execute("SELECT username FROM users WHERE id = ?", (session["user_id"],)).fetchone()
         return render_template("index.html", username=user["username"])
+        
+    @app.get("/assets/<path:filename>")
+    def serve_react_assets(filename):
+        return send_from_directory(os.path.join(REACT_DIST, "assets"), filename)
 
     @app.get("/todos")
     @login_required

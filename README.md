@@ -54,6 +54,8 @@ flowchart LR
     A -->|HTTP / JSON| B
     B --> C
 ```
+---
+
 <br>
 
 ## 📁 Project Structure
@@ -77,4 +79,101 @@ to-do-app/
 │
 └── .github/workflows/         # CI pipeline
     └── test.yml               # Runs pytest + vitest
+```
+---
+<br>
+
+## 🔌 API Reference
+
+### 🔐 Auth
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/register` | Create a new account |
+| `POST` | `/api/login` | Log in (sets session cookie) |
+| `POST` | `/api/logout` | Log out |
+| `GET` | `/api/me` | Get current logged-in user |
+
+### 📝 Todos
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/todos` | List current user's todos |
+| `POST` | `/todos` | Create a new todo |
+| `PATCH` | `/todos/<id>` | Update todo title/priority |
+| `PATCH` | `/todos/<id>/done` | Toggle todo completion |
+| `DELETE` | `/todos/<id>` | Delete a todo |
+| `DELETE` | `/todos/clear-completed` | Remove all completed todos |
+
+### 💓 Health
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/health` | Health check |
+---
+
+<br>
+
+# Setting work bench
+
+## 1. Prerequisites
+```
+Python 3.11+
+Node.js 20+
+```
+## 2. Clone the repository
+```
+git clone https://github.com/yuktheshwarbhat/to-do-app.git
+cd to-do-app
+```
+## 3. Set up the backend
+```
+python -m venv venv
+source venv/bin/activate        # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+## 4. Set up the frontend
+```
+cd frontend
+npm install
+cd ..
+```
+## 5. Run in development mode
+```
+# Terminal 1 — Flask API
+source venv/bin/activate
+python app.py
+
+# Terminal 2 — React dev server
+cd frontend
+npm run dev
+```
+## 6.  Running Tests
+```
+#Backend tests (pytest)
+source venv/bin/activate
+pytest -v
+
+#Frontend tests (vitest)
+cd frontend
+npx vitest run
+```
+## 7.  Production Build
+```
+cd frontend
+npm run build
+cd ..
+
+source venv/bin/activate
+python app.py
+```
+
+# 🤝 Contributing
+```
+Contributions are welcome! Here's how:
+🍴 Fork the repository
+🌿 Create a feature branch (git checkout -b feat/amazing)
+✅ Commit your changes (git commit -m "feat: add amazing thing")
+📤 Push to the branch (git push origin feat/amazing)
+🔀 Open a Pull Request
 ```
